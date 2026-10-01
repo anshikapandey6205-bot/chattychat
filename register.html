@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account — Connectly{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+{% endblock %}
+
+{% block body_class %}auth-body{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-container animate-slide-up">
+        <!-- Brand Header -->
+        <div class="auth-brand-header">
+            <a href="{{ url_for('chat.index') }}" class="auth-brand-link">
+                <div class="brand-icon-bubble">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
+                <h2>Connectly</h2>
+            </a>
+            <p class="auth-tagline">Connect. Chat. Share.</p>
+        </div>
+
+        <!-- Registration Card -->
+        <div class="auth-card glass-panel register-card">
+            <div class="auth-card-header">
+                <h3>Create an Account</h3>
+                <p>Join Connectly and start messaging in real time</p>
+            </div>
+
+            {% if error %}
+            <div class="alert alert-danger animate-shake">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <form id="register-form" method="POST" action="{{ url_for('auth.register') }}" enctype="multipart/form-data" class="auth-form" onsubmit="return validateRegisterForm(event)">
+                
+                <!-- Avatar Selector -->
+                <div class="form-group avatar-selection-group">
+                    <label>Choose Your Avatar</label>
+                    <div class="avatar-presets-wrapper">
+                        <div class="avatar-preset-item active" onclick="selectPresetAvatar(this, '/static/images/avatars/avatar-1.svg')">
+                            <img src="/static/images/avatars/avatar-1.svg" alt="Avatar 1">
+                        </div>
+                        <div class="avatar-preset-item" onclick="selectPresetAvatar(this, '/static/images/avatars/avatar-2.svg')">
+                            <img src="/static/images/avatars/avatar-2.svg" alt="Avatar 2">
+                        </div>
+                        <div class="avatar-preset-item" onclick="selectPresetAvatar(this, '/static/images/avatars/avatar-3.svg')">
+                            <img src="/static/images/avatars/avatar-3.svg" alt="Avatar 3">
+                        </div>
+                        <div class="avatar-preset-item" onclick="selectPresetAvatar(this, '/static/images/avatars/avatar-4.svg')">
+                            <img src="/static/images/avatars/avatar-4.svg" alt="Avatar 4">
+                        </div>
+                        <div class="avatar-preset-item" onclick="selectPresetAvatar(this, '/static/images/avatars/avatar-5.svg')">
+                            <img src="/static/images/avatars/avatar-5.svg" alt="Avatar 5">
+                        </div>
+                        <div class="avatar-preset-item" onclick="selectPresetAvatar(this, '/static/images/avatars/avatar-6.svg')">
+                            <img src="/static/images/avatars/avatar-6.svg" alt="Avatar 6">
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="avatar_preset" name="avatar_preset" value="/static/images/avatars/avatar-1.svg">
+                    
+                    <div class="avatar-upload-optional">
+                        <label for="profile_picture_file" class="upload-label">
+                            <i class="fa-solid fa-camera"></i> Or upload custom image
+                        </label>
+                        <input type="file" id="profile_picture_file" name="profile_picture_file" accept="image/*" onchange="handleCustomAvatarUpload(this)">
+                        <span id="custom-avatar-name" class="file-chosen-text"></span>
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="name"><i class="fa-solid fa-id-card"></i> Full Name</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="name" name="name" placeholder="e.g. John Doe" required autocomplete="name">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-username"><i class="fa-solid fa-at"></i> Username</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="reg-username" name="username" placeholder="e.g. johndoe" required pattern="^[a-zA-Z0-9_]{3,30}$" title="3-30 characters, letters, numbers, underscores" autocomplete="username">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-email"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="reg-email" name="email" placeholder="e.g. john@example.com" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="reg-password"><i class="fa-solid fa-lock"></i> Password</label>
+                        <div class="input-wrapper password-wrapper">
+                            <input type="password" id="reg-password" name="password" placeholder="Min. 6 chars" required minlength="6" autocomplete="new-password">
+                            <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('reg-password', this)">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password"><i class="fa-solid fa-shield-check"></i> Confirm</label>
+                        <div class="input-wrapper password-wrapper">
+                            <input type="password" id="confirm_password" name="confirm_password" placeholder="Repeat password" required minlength="6" autocomplete="new-password">
+                            <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('confirm_password', this)">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bio"><i class="fa-solid fa-pen-nib"></i> Bio / Status Message</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="bio" name="bio" placeholder="e.g. Exploring code & building cool stuff! 🚀" value="Hey there! I am using Connectly 💬">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full btn-glow btn-submit">
+                    <i class="fa-solid fa-user-plus"></i> Create Account
+                </button>
+            </form>
+
+            <div class="auth-card-footer">
+                <p>Already have an account? <a href="{{ url_for('auth.login') }}" class="auth-accent-link">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

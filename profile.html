@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile — Connectly{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="settings-page-wrapper">
+    <!-- Top Nav Header -->
+    <header class="settings-top-nav glass-panel">
+        <div class="nav-brand-group">
+            <a href="{{ url_for('chat.dashboard') }}" class="btn-nav-back" title="Back to Chat">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <div class="brand-info">
+                <h2>User Profile</h2>
+                <p>Manage your public identity and account settings</p>
+            </div>
+        </div>
+        <div class="nav-actions">
+            <a href="{{ url_for('chat.dashboard') }}" class="btn btn-secondary">
+                <i class="fa-solid fa-comments"></i> Return to Chat
+            </a>
+            <button id="theme-toggle-btn" class="btn btn-icon theme-toggle" title="Toggle Theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="settings-main-content">
+        <div class="profile-grid">
+            
+            <!-- Profile Identity Card -->
+            <div class="profile-identity-card glass-panel">
+                <div class="identity-banner"></div>
+                <div class="identity-avatar-container">
+                    <img src="{{ user.profile_picture }}" alt="{{ user.name }}" class="profile-main-avatar" id="profile-display-avatar">
+                    <span class="status-indicator {{ user.status }}" id="profile-status-dot"></span>
+                </div>
+                <div class="identity-info-block">
+                    <h3 id="profile-display-name">{{ user.name }}</h3>
+                    <p class="identity-handle">@{{ user.username }}</p>
+                    <p class="identity-email"><i class="fa-regular fa-envelope"></i> {{ user.email }}</p>
+                    <p class="identity-bio" id="profile-display-bio">"{{ user.bio }}"</p>
+                </div>
+                <div class="identity-footer-meta">
+                    <span><i class="fa-regular fa-calendar"></i> Joined {{ user.created_at[:10] if user.created_at else '2026' }}</span>
+                    <span><i class="fa-solid fa-signal"></i> {{ user.status|capitalize }}</span>
+                </div>
+            </div>
+
+            <!-- Profile Edit & Password Form Container -->
+            <div class="profile-forms-container">
+                
+                <!-- 1. Edit Profile Form -->
+                <div class="settings-card glass-panel">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-user-pen text-accent"></i> Edit Profile Information</h3>
+                        <p>Update your display name, status bio, and profile picture</p>
+                    </div>
+
+                    <form id="edit-profile-form" onsubmit="handleProfileUpdate(event)">
+                        
+                        <!-- Avatar Selection -->
+                        <div class="form-group">
+                            <label>Choose Avatar Preset or Upload</label>
+                            <div class="avatar-presets-wrapper">
+                                <div class="avatar-preset-item {% if user.profile_picture == '/static/images/avatars/avatar-1.svg' %}active{% endif %}" onclick="selectProfileAvatarPreset(this, '/static/images/avatars/avatar-1.svg')">
+                                    <img src="/static/images/avatars/avatar-1.svg" alt="Avatar 1">
+                                </div>
+                                <div class="avatar-preset-item {% if user.profile_picture == '/static/images/avatars/avatar-2.svg' %}active{% endif %}" onclick="selectProfileAvatarPreset(this, '/static/images/avatars/avatar-2.svg')">
+                                    <img src="/static/images/avatars/avatar-2.svg" alt="Avatar 2">
+                                </div>
+                                <div class="avatar-preset-item {% if user.profile_picture == '/static/images/avatars/avatar-3.svg' %}active{% endif %}" onclick="selectProfileAvatarPreset(this, '/static/images/avatars/avatar-3.svg')">
+                                    <img src="/static/images/avatars/avatar-3.svg" alt="Avatar 3">
+                                </div>
+                                <div class="avatar-preset-item {% if user.profile_picture == '/static/images/avatars/avatar-4.svg' %}active{% endif %}" onclick="selectProfileAvatarPreset(this, '/static/images/avatars/avatar-4.svg')">
+                                    <img src="/static/images/avatars/avatar-4.svg" alt="Avatar 4">
+                                </div>
+                                <div class="avatar-preset-item {% if user.profile_picture == '/static/images/avatars/avatar-5.svg' %}active{% endif %}" onclick="selectProfileAvatarPreset(this, '/static/images/avatars/avatar-5.svg')">
+                                    <img src="/static/images/avatars/avatar-5.svg" alt="Avatar 5">
+                                </div>
+                                <div class="avatar-preset-item {% if user.profile_picture == '/static/images/avatars/avatar-6.svg' %}active{% endif %}" onclick="selectProfileAvatarPreset(this, '/static/images/avatars/avatar-6.svg')">
+                                    <img src="/static/images/avatars/avatar-6.svg" alt="Avatar 6">
+                                </div>
+                            </div>
+                            <input type="hidden" id="edit-avatar-url" value="{{ user.profile_picture }}">
+
+                            <div class="avatar-custom-upload">
+                                <label for="edit-avatar-file" class="upload-btn-label">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload Custom Photo
+                                </label>
+                                <input type="file" id="edit-avatar-file" accept="image/*" onchange="previewUploadAvatar(this)">
+                                <span id="edit-avatar-filename" class="file-chosen-text"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="edit-name">Display Name</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="edit-name" value="{{ user.name }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-username">Username (Fixed)</label>
+                                <div class="input-wrapper disabled">
+                                    <input type="text" id="edit-username" value="{{ user.username }}" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-bio">About / Bio</label>
+                            <div class="input-wrapper">
+                                <textarea id="edit-bio" rows="2">{{ user.bio }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-custom-status">Custom Status Phrase</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="edit-custom-status" placeholder="e.g. 💻 Working on NextGen Chat" value="{{ user.custom_status or '' }}">
+                            </div>
+                        </div>
+
+                        <div class="form-actions-right">
+                            <button type="submit" class="btn btn-primary btn-glow" id="btn-save-profile">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Profile Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 2. Change Password Form -->
+                <div class="settings-card glass-panel">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-lock text-accent"></i> Security & Password</h3>
+                        <p>Ensure your account is protected with a secure password</p>
+                    </div>
+
+                    <form id="change-password-form" onsubmit="handleChangePassword(event)">
+                        <div class="form-group">
+                            <label for="current-password">Current Password</label>
+                            <div class="input-wrapper password-wrapper">
+                                <input type="password" id="current-password" placeholder="••••••••" required>
+                                <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('current-password', this)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="new-password">New Password</label>
+                                <div class="input-wrapper password-wrapper">
+                                    <input type="password" id="new-password" placeholder="Min. 6 chars" required minlength="6">
+                                    <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('new-password', this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm-new-password">Confirm New Password</label>
+                                <div class="input-wrapper password-wrapper">
+                                    <input type="password" id="confirm-new-password" placeholder="Repeat new password" required minlength="6">
+                                    <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('confirm-new-password', this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions-right">
+                            <button type="submit" class="btn btn-primary btn-glow" id="btn-change-password">
+                                <i class="fa-solid fa-key"></i> Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}
