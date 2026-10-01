@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{% block title %}Connectly — Modern Real-Time Chat{% endblock %}</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+    {% block extra_css %}{% endblock %}
+
+    <!-- Socket.IO CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.min.js"></script>
+    
+    <script>
+        // Synchronous theme initialization to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('connectly_theme') || 'dark';
+            if (savedTheme === 'system') {
+                const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-theme', systemDark ? 'dark' : 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+        })();
+    </script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Audio Element for Message Chime -->
+    <audio id="audio-notification" preload="auto">
+        <source src="data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcAAAP7///9/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f398AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/84DAAAAAAAAB" type="audio/mp3">
+    </audio>
+
+    <!-- Global Modals -->
+    <!-- Voice / Video Call Modal -->
+    <div id="call-modal" class="modal-backdrop hidden">
+        <div class="call-modal-card glass-panel">
+            <div class="call-pulse-ring">
+                <img id="call-avatar" src="/static/images/avatars/avatar-1.svg" alt="Caller" class="call-avatar">
+            </div>
+            <h3 id="call-name" class="call-user-name">User Name</h3>
+            <p id="call-status-text" class="call-status-label">Calling...</p>
+            <div class="call-timer hidden" id="call-timer">00:00</div>
+            
+            <div class="call-actions">
+                <button id="btn-call-mute" class="btn-call-action" title="Mute Mic">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+                <button id="btn-call-camera" class="btn-call-action" title="Toggle Camera">
+                    <i class="fa-solid fa-video"></i>
+                </button>
+                <button id="btn-call-hangup" class="btn-call-action btn-hangup" title="End Call">
+                    <i class="fa-solid fa-phone-slash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox Image Modal -->
+    <div id="lightbox-modal" class="lightbox-backdrop hidden" onclick="closeLightbox()">
+        <button class="btn-close-lightbox" aria-label="Close image"><i class="fa-solid fa-xmark"></i></button>
+        <img id="lightbox-img" src="" alt="Enlarged media" onclick="event.stopPropagation()">
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

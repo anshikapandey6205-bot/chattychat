@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In — Connectly{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+{% endblock %}
+
+{% block body_class %}auth-body{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-container animate-slide-up">
+        <!-- Brand Header -->
+        <div class="auth-brand-header">
+            <a href="{{ url_for('chat.index') }}" class="auth-brand-link">
+                <div class="brand-icon-bubble">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
+                <h2>Connectly</h2>
+            </a>
+            <p class="auth-tagline">Connect. Chat. Share.</p>
+        </div>
+
+        <!-- Auth Card -->
+        <div class="auth-card glass-panel">
+            <div class="auth-card-header">
+                <h3>Welcome back</h3>
+                <p>Enter your credentials to access your conversations</p>
+            </div>
+
+            {% if error %}
+            <div class="alert alert-danger animate-shake">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <form id="login-form" method="POST" action="{{ url_for('auth.login') }}" class="auth-form">
+                <div class="form-group">
+                    <label for="username"><i class="fa-solid fa-user"></i> Username or Email</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" name="username" placeholder="e.g. aarav or user@connectly.app" required autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
+                        <a href="javascript:void(0)" onclick="openForgotPasswordModal()" class="forgot-link">Forgot Password?</a>
+                    </div>
+                    <div class="input-wrapper password-wrapper">
+                        <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                        <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('password', this)" title="Show/Hide Password">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" name="remember" value="1" checked>
+                        <span class="checkmark"></span>
+                        <span class="label-text">Remember me</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full btn-glow btn-submit">
+                    <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                </button>
+            </form>
+
+            <!-- Quick Demo Accounts -->
+            <div class="auth-divider">
+                <span>or instant demo login</span>
+            </div>
+
+            <div class="demo-login-grid">
+                <button type="button" class="demo-user-btn" onclick="fillDemoCredentials('aarav', 'Password123!')">
+                    <img src="/static/images/avatars/avatar-1.svg" alt="Aarav">
+                    <div class="demo-info">
+                        <strong>Aarav</strong>
+                        <span>Lead Dev</span>
+                    </div>
+                </button>
+                <button type="button" class="demo-user-btn" onclick="fillDemoCredentials('priya', 'Password123!')">
+                    <img src="/static/images/avatars/avatar-2.svg" alt="Priya">
+                    <div class="demo-info">
+                        <strong>Priya</strong>
+                        <span>Product UI</span>
+                    </div>
+                </button>
+                <button type="button" class="demo-user-btn" onclick="fillDemoCredentials('rahul', 'Password123!')">
+                    <img src="/static/images/avatars/avatar-3.svg" alt="Rahul">
+                    <div class="demo-info">
+                        <strong>Rahul</strong>
+                        <span>DevOps</span>
+                    </div>
+                </button>
+                <button type="button" class="demo-user-btn" onclick="fillDemoCredentials('sneha', 'Password123!')">
+                    <img src="/static/images/avatars/avatar-4.svg" alt="Sneha">
+                    <div class="demo-info">
+                        <strong>Sneha</strong>
+                        <span>AI Lead</span>
+                    </div>
+                </button>
+            </div>
+
+            <div class="auth-card-footer">
+                <p>Don't have an account? <a href="{{ url_for('auth.register') }}" class="auth-accent-link">Create Account</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div id="forgot-modal" class="modal-backdrop hidden" onclick="closeForgotPasswordModal()">
+    <div class="modal-card glass-panel" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-key text-accent"></i> Reset Password</h3>
+            <button class="btn-close-modal" onclick="closeForgotPasswordModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-desc">Enter your email address and we will dispatch password recovery instructions.</p>
+            <div class="form-group">
+                <label for="forgot-email">Registered Email Address</label>
+                <div class="input-wrapper">
+                    <input type="email" id="forgot-email" placeholder="you@connectly.app">
+                </div>
+            </div>
+            <div class="demo-tip-box">
+                <i class="fa-solid fa-lightbulb"></i>
+                <span><strong>Demo Tip:</strong> For default accounts (aarav, priya, etc.), the password is <code>Password123!</code></span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeForgotPasswordModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="submitForgotPassword()">Send Reset Instructions</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+
+{% block title %}Connectly — Connect. Chat. Share.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="landing-wrapper">
+    <!-- Top Navigation Bar -->
+    <nav class="landing-nav glass-panel">
+        <div class="landing-brand">
+            <div class="brand-icon-bubble">
+                <i class="fa-solid fa-comments"></i>
+            </div>
+            <span class="brand-title">Connectly</span>
+        </div>
+        
+        <div class="nav-links">
+            {% if current_user %}
+                <a href="{{ url_for('chat.dashboard') }}" class="btn btn-primary btn-glow">
+                    <i class="fa-solid fa-paper-plane"></i> Open Chat
+                </a>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Log In
+                </a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-glow">
+                    <i class="fa-solid fa-user-plus"></i> Create Account
+                </a>
+            {% endif %}
+            
+            <button id="theme-toggle-btn" class="btn btn-icon theme-toggle" title="Toggle Theme" aria-label="Toggle Theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="landing-hero">
+        <div class="hero-badge animate-fade-in">
+            <span class="pulse-dot"></span> Next-Gen Real-Time Messaging Platform
+        </div>
+        
+        <h1 class="hero-title animate-slide-up">
+            Connect. <span class="gradient-text">Chat.</span> Share.
+        </h1>
+        
+        <p class="hero-subtitle animate-slide-up delay-1">
+            Experience ultra-fast real-time messaging, crisp media sharing, voice calling, and rich group collaboration powered by WebSockets and modern glassmorphism.
+        </p>
+
+        <div class="hero-cta animate-slide-up delay-2">
+            {% if current_user %}
+                <a href="{{ url_for('chat.dashboard') }}" class="btn btn-hero-primary">
+                    <i class="fa-solid fa-comments"></i> Launch Workspace
+                </a>
+            {% else %}
+                <a href="{{ url_for('auth.register') }}" class="btn btn-hero-primary">
+                    <i class="fa-solid fa-sparkles"></i> Get Started Free
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-hero-secondary">
+                    <i class="fa-solid fa-right-to-bracket"></i> Sign In to Demo
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- 1-Click Demo Accounts Pill Bar -->
+        <div class="demo-quickbar glass-card animate-slide-up delay-3">
+            <div class="demo-quickbar-title">
+                <i class="fa-solid fa-bolt"></i> Quick Demo Logins:
+            </div>
+            <div class="demo-pills">
+                <button class="demo-pill" onclick="quickLogin('aarav', 'Password123!')">
+                    <img src="/static/images/avatars/avatar-1.svg" alt="Aarav">
+                    <span>Aarav (Admin)</span>
+                </button>
+                <button class="demo-pill" onclick="quickLogin('priya', 'Password123!')">
+                    <img src="/static/images/avatars/avatar-2.svg" alt="Priya">
+                    <span>Priya (Designer)</span>
+                </button>
+                <button class="demo-pill" onclick="quickLogin('rahul', 'Password123!')">
+                    <img src="/static/images/avatars/avatar-3.svg" alt="Rahul">
+                    <span>Rahul (DevOps)</span>
+                </button>
+                <button class="demo-pill" onclick="quickLogin('sneha', 'Password123!')">
+                    <img src="/static/images/avatars/avatar-4.svg" alt="Sneha">
+                    <span>Sneha (AI Lead)</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Showcase Interactive Live Preview Dashboard -->
+    <section class="live-dashboard-preview animate-slide-up delay-3">
+        <div class="preview-container glass-panel">
+            <div class="preview-header">
+                <div class="preview-dots">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                </div>
+                <div class="preview-tab-title">
+                    <i class="fa-solid fa-globe"></i> app.connectly.io/live-dashboard
+                </div>
+                <div class="preview-badge">
+                    <i class="fa-solid fa-circle text-success"></i> Socket Connected
+                </div>
+            </div>
+
+            <div class="preview-body">
+                <!-- 1. Online Friends Row -->
+                <div class="preview-section">
+                    <div class="section-title-row">
+                        <h4><i class="fa-solid fa-users"></i> Online Friends</h4>
+                        <span class="badge badge-accent">4 Active Now</span>
+                    </div>
+                    <div class="online-friends-track">
+                        <div class="friend-card active">
+                            <div class="avatar-wrap">
+                                <img src="/static/images/avatars/avatar-2.svg" alt="Priya">
+                                <span class="status-indicator online"></span>
+                            </div>
+                            <span class="friend-name">Priya</span>
+                            <span class="friend-role">UX Lead</span>
+                        </div>
+                        <div class="friend-card">
+                            <div class="avatar-wrap">
+                                <img src="/static/images/avatars/avatar-3.svg" alt="Rahul">
+                                <span class="status-indicator away"></span>
+                            </div>
+                            <span class="friend-name">Rahul</span>
+                            <span class="friend-role">DevOps</span>
+                        </div>
+                        <div class="friend-card">
+                            <div class="avatar-wrap">
+                                <img src="/static/images/avatars/avatar-4.svg" alt="Sneha">
+                                <span class="status-indicator online"></span>
+                            </div>
+                            <span class="friend-name">Sneha</span>
+                            <span class="friend-role">AI Lab</span>
+                        </div>
+                        <div class="friend-card">
+                            <div class="avatar-wrap">
+                                <img src="/static/images/avatars/avatar-5.svg" alt="Riya">
+                                <span class="status-indicator online"></span>
+                            </div>
+                            <span class="friend-name">Riya</span>
+                            <span class="friend-role">Mobile</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Recent Chats & Unread Messages Row -->
+                <div class="preview-split-grid">
+                    <!-- Recent Conversations -->
+                    <div class="preview-card glass-card">
+                        <div class="section-title-row">
+                            <h4><i class="fa-solid fa-clock-rotate-left"></i> Recent Chats</h4>
+                            <a href="{{ url_for('auth.login') }}" class="link-action">View All</a>
+                        </div>
+                        <div class="preview-chat-list">
+                            <div class="preview-chat-item highlight">
+                                <img src="/static/images/avatars/avatar-2.svg" alt="Priya" class="item-avatar">
+                                <div class="item-info">
+                                    <div class="item-top">
+                                        <span class="item-title">Priya Patel</span>
+                                        <span class="item-time">Just now</span>
+                                    </div>
+                                    <p class="item-snippet">Testing out real-time delivery right now. Everything feels super snappy! 🚀</p>
+                                </div>
+                                <span class="unread-pill">1</span>
+                            </div>
+
+                            <div class="preview-chat-item">
+                                <img src="/static/images/avatars/group.svg" alt="Group" class="item-avatar">
+                                <div class="item-info">
+                                    <div class="item-top">
+                                        <span class="item-title">Tech Innovators 🚀</span>
+                                        <span class="item-time">20m ago</span>
+                                    </div>
+                                    <p class="item-snippet"><strong>Priya:</strong> Great job team! Let us test file attachments...</p>
+                                </div>
+                                <span class="unread-pill">3</span>
+                            </div>
+
+                            <div class="preview-chat-item">
+                                <img src="/static/images/avatars/avatar-3.svg" alt="Rahul" class="item-avatar">
+                                <div class="item-info">
+                                    <div class="item-top">
+                                        <span class="item-title">Rahul Verma</span>
+                                        <span class="item-time">3h ago</span>
+                                    </div>
+                                    <p class="item-snippet">Sub-millisecond latency on local socket transport. Zero drops! ⚡</p>
+                                </div>
+                                <span class="check-mark"><i class="fa-solid fa-check-double text-accent"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Live Interaction Preview -->
+                    <div class="preview-card glass-card">
+                        <div class="section-title-row">
+                            <h4><i class="fa-solid fa-bolt-lightning"></i> Quick New Chat</h4>
+                            <span class="badge badge-success">Instant Routing</span>
+                        </div>
+                        <div class="quick-action-box">
+                            <p class="quick-desc">Search through teammates or create a collaborative space in seconds.</p>
+                            <div class="quick-search-mock">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" placeholder="Search friends, files, or messages..." readonly onclick="window.location.href='{{ url_for('auth.login') }}'">
+                            </div>
+                            <div class="quick-buttons">
+                                <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-full">
+                                    <i class="fa-solid fa-user-plus"></i> New Direct Message
+                                </a>
+                                <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-full">
+                                    <i class="fa-solid fa-people-group"></i> Create Group Channel
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Features Grid -->
+    <section class="features-section">
+        <div class="section-header text-center">
+            <h2 class="section-heading">Engineered for <span class="gradient-text">Speed & Delight</span></h2>
+            <p class="section-subtext">Everything you need for seamless modern team and peer-to-peer communication.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card glass-card">
+                <div class="feature-icon icon-purple">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <h3>Real-Time WebSockets</h3>
+                <p>Zero-latency message exchange with dynamic typing indicators, online presence, and instant read receipts.</p>
+            </div>
+
+            <div class="feature-card glass-card">
+                <div class="feature-icon icon-blue">
+                    <i class="fa-solid fa-icons"></i>
+                </div>
+                <h3>Emoji Reactions & Replies</h3>
+                <p>Express yourself with emoji reactions, message quotes, in-line editing, and message retraction capabilities.</p>
+            </div>
+
+            <div class="feature-card glass-card">
+                <div class="feature-icon icon-emerald">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h3>Rich Media & File Sharing</h3>
+                <p>Upload images, documents, PDFs, and code snippets with integrated lightbox viewers and media galleries.</p>
+            </div>
+
+            <div class="feature-card glass-card">
+                <div class="feature-icon icon-rose">
+                    <i class="fa-solid fa-users-viewfinder"></i>
+                </div>
+                <h3>Group Channels & Search</h3>
+                <p>Organize team channels, manage member permissions, and instantly search across conversations and text history.</p>
+            </div>
+
+            <div class="feature-card glass-card">
+                <div class="feature-icon icon-amber">
+                    <i class="fa-solid fa-moon"></i>
+                </div>
+                <h3>Adaptive Dark / Light UI</h3>
+                <p>Glassmorphism aesthetic with seamless dark mode transitions, custom status messages, and audio chimes.</p>
+            </div>
+
+            <div class="feature-card glass-card">
+                <div class="feature-icon icon-indigo">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3>Robust Security & Sessions</h3>
+                <p>Password hashing with Scrypt/PBKDF2, SQL parameterization, sanitized file streams, and privacy controls.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer glass-panel">
+        <div class="footer-content">
+            <div class="footer-left">
+                <div class="footer-brand">
+                    <i class="fa-solid fa-comments text-accent"></i> Connectly
+                </div>
+                <p>Modern Real-Time Chat Platform built with Python, Flask, WebSockets, SQLite, and Vanilla JS.</p>
+            </div>
+            <div class="footer-right">
+                <p>&copy; 2026 Connectly. Developed for high-performance communication.</p>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function quickLogin(username, password) {
+        showToast('info', `Logging in as ${username}...`);
+        try {
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password, remember: true })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('success', `Welcome back, ${data.user.name}!`);
+                setTimeout(() => {
+                    window.location.href = data.redirect || '/chat';
+                }, 400);
+            } else {
+                showToast('error', data.error || 'Login failed.');
+            }
+        } catch (err) {
+            showToast('error', 'Connection error. Please try again.');
+        }
+    }
+</script>
+{% endblock %}

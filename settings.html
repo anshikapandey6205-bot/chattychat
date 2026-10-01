@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings — Connectly{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="settings-page-wrapper">
+    <!-- Top Nav Header -->
+    <header class="settings-top-nav glass-panel">
+        <div class="nav-brand-group">
+            <a href="{{ url_for('chat.dashboard') }}" class="btn-nav-back" title="Back to Chat">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <div class="brand-info">
+                <h2>Application Settings</h2>
+                <p>Customize appearance, notifications, privacy and security</p>
+            </div>
+        </div>
+        <div class="nav-actions">
+            <a href="{{ url_for('chat.dashboard') }}" class="btn btn-secondary">
+                <i class="fa-solid fa-comments"></i> Return to Chat
+            </a>
+            <button id="theme-toggle-btn" class="btn btn-icon theme-toggle" title="Toggle Theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="settings-main-content">
+        <div class="settings-layout-grid">
+            
+            <!-- Left Category Navigation Tabs -->
+            <div class="settings-nav-sidebar glass-panel">
+                <button class="settings-nav-btn active" onclick="switchSettingsSection('appearance', this)">
+                    <i class="fa-solid fa-palette"></i>
+                    <span>Appearance</span>
+                </button>
+                <button class="settings-nav-btn" onclick="switchSettingsSection('notifications', this)">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Notifications</span>
+                </button>
+                <button class="settings-nav-btn" onclick="switchSettingsSection('privacy', this)">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Privacy</span>
+                </button>
+                <button class="settings-nav-btn" onclick="switchSettingsSection('account', this)">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>Account & Security</span>
+                </button>
+            </div>
+
+            <!-- Right Settings Section Contents -->
+            <div class="settings-content-cards">
+                
+                <!-- 1. Appearance Section -->
+                <div id="section-appearance" class="settings-card glass-panel settings-section active">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-palette text-accent"></i> Appearance & Theme</h3>
+                        <p>Select your interface theme and visual preferences</p>
+                    </div>
+
+                    <div class="theme-options-grid">
+                        <div class="theme-choice-card {% if user.theme_preference == 'dark' or not user.theme_preference %}active{% endif %}" onclick="setAppTheme('dark', this)">
+                            <div class="theme-preview dark-preview">
+                                <div class="preview-bar"></div>
+                                <div class="preview-bubble"></div>
+                            </div>
+                            <span class="theme-label"><i class="fa-solid fa-moon"></i> Dark Mode</span>
+                        </div>
+
+                        <div class="theme-choice-card {% if user.theme_preference == 'light' %}active{% endif %}" onclick="setAppTheme('light', this)">
+                            <div class="theme-preview light-preview">
+                                <div class="preview-bar"></div>
+                                <div class="preview-bubble"></div>
+                            </div>
+                            <span class="theme-label"><i class="fa-solid fa-sun"></i> Light Mode</span>
+                        </div>
+
+                        <div class="theme-choice-card {% if user.theme_preference == 'system' %}active{% endif %}" onclick="setAppTheme('system', this)">
+                            <div class="theme-preview system-preview">
+                                <div class="preview-split-dark"></div>
+                                <div class="preview-split-light"></div>
+                            </div>
+                            <span class="theme-label"><i class="fa-solid fa-desktop"></i> System Default</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-toggles-list">
+                        <div class="toggle-item">
+                            <div class="toggle-info">
+                                <strong>Glassmorphism & Blur Effects</strong>
+                                <span>Render frosted glass backgrounds on panels and modals</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="setting-glassmorphism" checked onchange="showToast('info', 'Visual effects updated.')">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Notifications Section -->
+                <div id="section-notifications" class="settings-card glass-panel settings-section hidden">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-bell text-accent"></i> Notification Preferences</h3>
+                        <p>Control audio alerts and desktop notifications</p>
+                    </div>
+
+                    <div class="settings-toggles-list">
+                        <div class="toggle-item">
+                            <div class="toggle-info">
+                                <strong>Sound Notifications</strong>
+                                <span>Play a gentle chime when receiving new messages</span>
+                            </div>
+                            <div class="toggle-actions-right">
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="testNotificationSound()">
+                                    <i class="fa-solid fa-volume-high"></i> Test Sound
+                                </button>
+                                <label class="switch">
+                                    <input type="checkbox" id="setting-sound" {% if user.sound_notifications %}checked{% endif %} onchange="saveNotificationSettings()">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="toggle-item">
+                            <div class="toggle-info">
+                                <strong>Desktop Web Notifications</strong>
+                                <span>Show system notifications when the app is in the background</span>
+                            </div>
+                            <div class="toggle-actions-right">
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="requestDesktopPermission()">
+                                    <i class="fa-solid fa-shield-halved"></i> Request Permission
+                                </button>
+                                <label class="switch">
+                                    <input type="checkbox" id="setting-desktop" {% if user.desktop_notifications %}checked{% endif %} onchange="saveNotificationSettings()">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Privacy Section -->
+                <div id="section-privacy" class="settings-card glass-panel settings-section hidden">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-lock text-accent"></i> Privacy Controls</h3>
+                        <p>Manage who can see your online status and last seen timestamp</p>
+                    </div>
+
+                    <div class="settings-form-block">
+                        <div class="form-group">
+                            <label for="setting-last-seen">Who can see my Last Seen timestamp?</label>
+                            <div class="input-wrapper">
+                                <select id="setting-last-seen" onchange="savePrivacySettings()">
+                                    <option value="everyone" {% if user.privacy_last_seen == 'everyone' %}selected{% endif %}>Everyone</option>
+                                    <option value="contacts" {% if user.privacy_last_seen == 'contacts' %}selected{% endif %}>Contacts Only</option>
+                                    <option value="nobody" {% if user.privacy_last_seen == 'nobody' %}selected{% endif %}>Nobody</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="toggle-item">
+                            <div class="toggle-info">
+                                <strong>Read Receipts (Blue Checks)</strong>
+                                <span>Show double checkmarks when messages are seen</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="setting-read-receipts" {% if user.privacy_read_receipts %}checked{% endif %} onchange="savePrivacySettings()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Account & Security Section -->
+                <div id="section-account" class="settings-card glass-panel settings-section hidden">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-shield-halved text-accent"></i> Account & Session Security</h3>
+                        <p>Manage login sessions and account termination</p>
+                    </div>
+
+                    <div class="session-info-card">
+                        <div class="session-icon"><i class="fa-solid fa-laptop"></i></div>
+                        <div class="session-details">
+                            <strong>Current Session (Active)</strong>
+                            <span>macOS / Web Browser &bull; IP: 127.0.0.1</span>
+                        </div>
+                        <span class="badge badge-success">Online</span>
+                    </div>
+
+                    <div class="danger-zone-card">
+                        <div class="danger-header">
+                            <h4><i class="fa-solid fa-triangle-exclamation"></i> Security Actions</h4>
+                        </div>
+                        <div class="danger-actions-row">
+                            <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">
+                                <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                            </a>
+                            <button class="btn btn-danger" onclick="logoutAllDevices()">
+                                <i class="fa-solid fa-power-off"></i> Logout from All Devices
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}
